@@ -1,4 +1,4 @@
-/* rental duration variation based on categories
+/* rental duration variation based on categories*/
 SELECT t1.name,t1.standard_quartile,
        COUNT(*) from  (SELECT f.title,c.name,f.rental_duration,
                         NTILE(4) OVER (ORDER BY f.rental_duration) AS standard_quartile
