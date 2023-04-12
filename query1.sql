@@ -1,7 +1,6 @@
 /* query for retrieving the count and percentage of movies that belong to a specific set of categories */
-  (count(*))*100 / sum(count(*)) over() as percentage    /* here count(*) will calcualate the total movies in one category and sum is 
-                                                            allowing us to perform sum operation across the whole data set filtered from the subquery */
-  
+select t1.name as category, count(*) AS movie_count, sum(count(*)) over() as total_movies,
+ (count(*))*100 / sum(count(*)) over() as percentage 
 from (select f.title, c.name
   from film f
   join film_category fc 
@@ -13,7 +12,6 @@ from (select f.title, c.name
   join rental r 
   on r.inventory_id=i.inventory_id
   where c.name in('Animation','Children','Classics','Comedy','Family','Music')) AS t1
-  
 group by 1
 order by 4;
 
