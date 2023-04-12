@@ -1,5 +1,5 @@
 /* To find the every movie rental duration percentile in their relevant category*/
-SELECT f.title, c.name, f.rental_duration,
+SELECT f.title AS title, c.name as category, f.rental_duration,
 NTILE(4) OVER (ORDER BY f.rental_duration) AS standard_quartile
 FROM film f
 JOIN film_category fc
