@@ -1,5 +1,4 @@
-
-select t1.name as category, count(*) AS movie_count, sum(count(*)) over() as total_movies,
+/* query for retrieving the count and percentage of movies that belong to a specific set of categories */
   (count(*))*100 / sum(count(*)) over() as percentage    /* here count(*) will calcualate the total movies in one category and sum is 
                                                             allowing us to perform sum operation across the whole data set filtered from the subquery */
   
