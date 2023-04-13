@@ -1,0 +1,98 @@
+Query 1:
+/* query for retrieving the count and percentage of movies that belong to a specific set of categories */
+select t1.name as category, 
+       count(*) AS movie_count, 
+       sum(count(*)) over() as total_movies,
+       (count(*))*100 / sum(count(*)) over() as percentage
+  from (select f.title, c.name
+          from film f
+               join film_category fc
+               on fc.film_id=f.film_id
+
+               join inventory i
+               on i.film_id=fc.film_id
+
+               join category c
+               on fc.category_id=c.category_id
+
+               join rental r
+               on r.inventory_id=i.inventory_id
+               where c.name in('Animation','Children','Classics','Comedy','Family','Music')) AS t1
+ group by 1
+ order by 4;
+
+Query 2:
+/* based on the category which movie  was rented most and for how much duration*/
+SELECT c.name as category, 
+       f.rental_duration,
+       count(*) as total_movies
+  FROM film f
+       JOIN film_category fc
+       ON f.film_id=fc.film_id
+
+       JOIN category c
+       ON c.category_id=fc.category_id
+       WHERE c.name IN ('Animation',
+                        'Children',
+                        'Classics',
+                        'Comedy',
+                        'Family',
+                        'Music')
+ Group By 1,2
+ Order BY 3 desc,2 desc;
+
+Query 3:
+/* rental duration variation based on categories*/
+SELECT t1.name,t1.standard_quartile,
+       COUNT(*) from
+       (SELECT f.title,c.name,f.rental_duration,
+               NTILE(4) OVER (ORDER BY f.rental_duration) AS standard_quartile
+          FROM film f
+          JOIN film_category fc
+            ON f.film_id=fc.film_id
+
+          JOIN category c
+            ON c.category_id=fc.category_id
+         WHERE c.name IN ('Animation',
+                        'Children',
+                        'Classics',
+                        'Comedy',
+                        'Family',
+                        'Music')) as t1
+
+ GROUP BY 1,2
+ ORDER BY 1,2
+
+Query 4:
+/* The count of rentals for each store per month */
+SELECT DATE_PART('month',r.rental_date) AS month, 
+       DATE_PART('year', r.rental_date) as year,st.store_id , 
+       count(*) as count_rentals
+  FROM store st
+       JOIN staff s
+       ON st.store_id=s.store_id
+
+       JOIN rental r
+       ON r.staff_id=s.staff_id
+
+ GROUP BY 1,2,3
+ ORDER BY 4 desc
+
+Query 5:
+/* To find the every movie rental duration percentile in their relevant category*/
+SELECT f.title AS title, 
+       c.name as category, 
+       f.rental_duration,
+       NTILE(4) OVER (ORDER BY f.rental_duration) AS standard_quartile
+  FROM film f
+       JOIN film_category fc
+       ON f.film_id=fc.film_id
+
+       JOIN category c
+       ON c.category_id=fc.category_id
+       WHERE c.name IN ('Animation',
+                  'Children',
+                  'Classics',
+                  'Comedy',
+                  'Family',
+                  'Music')
